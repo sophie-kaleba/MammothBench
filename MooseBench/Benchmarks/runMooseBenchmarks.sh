@@ -5,7 +5,7 @@ for PROJECT in lucene wildfly netbeans spring
 do
 if [ ! -f ../WorkLoads/$PROJECT.mse ]; then
 	echo "unzipping $PROJECT..."
-    unzip ../WorkLoads/$PROJECT.zip
+    unzip ../WorkLoads/$PROJECT.zip -d ../WorkLoads
 	echo "OK"
 fi
 done
@@ -21,19 +21,21 @@ echo "loading Moose..."
     smalltalkhubUser: 'Moose' project: 'Moose';
     configuration: 'Moose';
     version: #development;
-    load."
+    load.
+	Smalltalk snapshot: true andQuit: true."
 echo "OK"
 
 #loading bench scripts
 echo "loading Bench scripts..."
-./pharo Pharo.image CogTools-GCBenchGenerator.st
+./pharo Pharo.image CogTools-GCBenchGenerator.st 
+./pharo Pharo.image eval "GCBenchEvaluator compileAll. GCBenchConfigurator compileAll. GCBenchEvaluatorV2 compileAll. GCMooseBench compileAll. Smalltalk snapshot: true andQuit: true."
 echo "OK"
 
 #running bench
 for PROJECT in lucene wildfly spring
 do
 echo "running Bench $PROJECT..."
-./pharo Pharo.image eval "GCBenchEvaluator runReference: #$PROJECT"
+./pharo Pharo.image eval "GCBenchEvaluator runReference: #$PROJECT."
 echo "OK"
 done
 
